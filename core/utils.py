@@ -22,6 +22,18 @@ def extract_text_from_docx(docx_file):
         text += paragraph.text + "\n"
     return text
 
+def extract_name_email(text):
+    # Extract email
+    email_pattern = r'[\w\.-]+@[\w\.-]+'
+    email_match = re.search(email_pattern, text)
+    email = email_match.group(0) if email_match else None
+
+    # Extract name (Assuming name is in the first few words)
+    words = text.split()
+    name = " ".join(words[:2]) if len(words) > 1 else None
+
+    return name, email
+
 def preprocess_text(text):
     # Convert to lowercase and remove special characters
     text = re.sub(r'[^\w\s]', '', text.lower())
@@ -29,18 +41,12 @@ def preprocess_text(text):
     text = ' '.join(text.split())
     return text
 
-def calculate_similarity(job_requirements, resume_text):
-    # Preprocess texts
-    job_requirements = preprocess_text(job_requirements)
-    resume_text = preprocess_text(resume_text)
-    
-    # Create TF-IDF vectorizer
+def calculate_similarity(job_description, resume_text):
+    from sklearn.feature_extraction.text import TfidfVectorizer
+    from sklearn.metrics.pairwise import cosine_similarity
+
     vectorizer = TfidfVectorizer()
+    vectors = vectorizer.fit_transform([job_description, resume_text])
+    similarity_score = cosine_similarity(vectors[0], vectors[1])[0][0]
     
-    # Calculate TF-IDF matrices
-    tfidf_matrix = vectorizer.fit_transform([job_requirements, resume_text])
-    
-    # Calculate cosine similarity
-    similarity = cosine_similarity(tfidf_matrix[0:1], tfidf_matrix[1:2])[0][0]
-    
-    return similarity * 100  # Convert to percentage 
+    return round(similarity_score * 100, 2)

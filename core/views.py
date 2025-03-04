@@ -4,7 +4,8 @@ from django.core.mail import send_mass_mail
 from django.conf import settings
 from .models import JobPosting, Applicant, EmailInvitation
 from .forms import JobPostingForm, ApplicantForm, EmailInvitationForm
-from .utils import extract_text_from_pdf, extract_text_from_docx, calculate_similarity
+from .utils import extract_text_from_pdf, extract_text_from_docx, extract_name_email, calculate_similarity
+
 
 def job_posting_create(request):
     if request.method == 'POST':
@@ -18,44 +19,57 @@ def job_posting_create(request):
 
 def upload_resumes(request, job_id):
     job = get_object_or_404(JobPosting, id=job_id)
-    
+
     if request.method == 'POST':
         form = ApplicantForm(request.POST, request.FILES)
-        if form.is_valid():
-            applicant = form.save(commit=False)
-            applicant.job = job
-            
-            # Extract text from resume
-            resume_file = request.FILES['resume']
-            if resume_file.name.endswith('.pdf'):
-                resume_text = extract_text_from_pdf(resume_file)
-            elif resume_file.name.endswith('.docx'):
-                resume_text = extract_text_from_docx(resume_file)
-            else:
-                messages.error(request, 'Unsupported file format')
-                return redirect('upload_resumes', job_id=job.id)
-            
-            # Calculate similarity score
-            score = calculate_similarity(job.requirements, resume_text)
-            applicant.score = score
-            applicant.save()
-            
-            messages.success(request, 'Resume uploaded successfully')
+        resumes = request.FILES.getlist('resumes')  # Allow multiple file uploads
+
+        if resumes:
+            for resume_file in resumes:
+                # Extract text from resume
+                if resume_file.name.endswith('.pdf'):
+                    resume_text = extract_text_from_pdf(resume_file)
+                elif resume_file.name.endswith('.docx'):
+                    resume_text = extract_text_from_docx(resume_file)
+                else:
+                    messages.error(request, f'Unsupported file format: {resume_file.name}')
+                    continue
+
+                # Extract name and email
+                name, email = extract_name_email(resume_text)
+                if not name or not email:
+                    messages.warning(request, f'Could not extract name and email from {resume_file.name}')
+                    continue
+
+                # Calculate similarity score
+                score = calculate_similarity(job.requirements, resume_text)
+
+                # Save applicant details
+                Applicant.objects.create(
+                    job=job,
+                    name=name,
+                    email=email,
+                    resume=resume_file,
+                    score=score
+                )
+
+            messages.success(request, 'Resumes uploaded successfully')
             return redirect('upload_resumes', job_id=job.id)
+    
     else:
         form = ApplicantForm()
-    
-    # Get top candidates
-    top_candidates = Applicant.objects.filter(job=job).order_by('-score')[:job.required_candidates]
-    
+
+    # Get all candidates sorted by score
+    all_candidates = Applicant.objects.filter(job=job).order_by('-score')
+    top_candidates = all_candidates[:job.required_candidates]
+
     context = {
         'job': job,
         'form': form,
         'top_candidates': top_candidates,
+        'all_candidates': all_candidates
     }
     return render(request, 'core/upload_resumes.html', context)
-
-
 
 def send_invitations(request, job_id):
     job = get_object_or_404(JobPosting, id=job_id)
@@ -71,17 +85,30 @@ def send_invitations(request, job_id):
             # Prepare emails
             emails = []
             for candidate in top_candidates:
+                cleaned_email = candidate.email.strip().rstrip('.')  # Remove trailing spaces and periods
+                
+                if '@' not in cleaned_email or '.' not in cleaned_email.split('@')[-1]:
+                    messages.error(request, f"Invalid email address: {cleaned_email}")
+                    continue  # Skip invalid email
+                
                 email = (
                     invitation.subject,
                     invitation.message,
                     settings.DEFAULT_FROM_EMAIL,
-                    [candidate.email],
+                    [cleaned_email],  # Ensure cleaned email is used
                 )
                 emails.append(email)
             
-            # Send emails
-            send_mass_mail(emails)
-            messages.success(request, 'Invitations sent successfully')
+            # Send emails if there are valid recipients
+            if emails:
+                try:
+                    send_mass_mail(emails, fail_silently=False)
+                    messages.success(request, 'Invitations sent successfully')
+                except Exception as e:
+                    messages.error(request, f"Error sending emails: {e}")
+            else:
+                messages.error(request, 'No valid email addresses to send invitations.')
+
             return redirect('job_posting_create')
     else:
         form = EmailInvitationForm()

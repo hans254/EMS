@@ -10,9 +10,11 @@ class JobPostingForm(forms.ModelForm):
         }
 
 class ApplicantForm(forms.ModelForm):
+    resumes = forms.FileField(widget=forms.ClearableFileInput(attrs={'multiple': True}), required=True)
+
     class Meta:
         model = Applicant
-        fields = ['name', 'email', 'resume']
+        fields = ['resumes']
 
 class EmailInvitationForm(forms.ModelForm):
     class Meta:
