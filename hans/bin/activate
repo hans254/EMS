@@ -35,7 +35,7 @@ deactivate () {
 # unset irrelevant variables
 deactivate nondestructive
 
-VIRTUAL_ENV=/home/hansel/Desktop/Project/resume_analyzer/hans
+VIRTUAL_ENV=/home/hansel/Desktop/Project/EMS/hans
 export VIRTUAL_ENV
 
 _OLD_VIRTUAL_PATH="$PATH"

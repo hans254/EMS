@@ -33,7 +33,7 @@ end
 # Unset irrelevant variables.
 deactivate nondestructive
 
-set -gx VIRTUAL_ENV /home/hansel/Desktop/Project/resume_analyzer/hans
+set -gx VIRTUAL_ENV /home/hansel/Desktop/Project/EMS/hans
 
 set -gx _OLD_VIRTUAL_PATH $PATH
 set -gx PATH "$VIRTUAL_ENV/"bin $PATH
