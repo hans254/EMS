@@ -1,0 +1,80 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h2>Upload Resumes for {{ job.title }}</h2>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="card p-3">
+                {{ form.as_p }}
+                <button type="submit" class="btn btn-primary">Upload Resumes</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h3 class="card-title mb-0">Top {{ job.required_candidates }} Qualified Candidates</h3>
+            </div>
+            <div class="card-body">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Score</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for candidate in top_candidates %}
+                        <tr>
+                            <td>{{ candidate.name }}</td>
+                            <td>{{ candidate.email }}</td>
+                            <td>{{ candidate.score|floatformat:2 }}%</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                
+                {% if top_candidates %}
+                <a href="{% url 'send_invitations' job.id %}" class="btn btn-success">
+                    Send Interview Invitations to Selected Candidates
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h3 class="card-title mb-0">All Candidates</h3>
+            </div>
+            <div class="card-body">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Score</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for candidate in all_candidates %}
+                        <tr {% if candidate in top_candidates %}class="table-success"{% endif %}>
+                            <td>{{ candidate.name }}</td>
+                            <td>{{ candidate.email }}</td>
+                            <td>{{ candidate.score|floatformat:2 }}%</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,30 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <h2>Send Interview Invitations</h2>
+        <div class="mb-4">
+            <h4>Selected Candidates:</h4>
+            <ul>
+                {% for candidate in top_candidates %}
+                <li>{{ candidate.name }} ({{ candidate.email }}) - Score: {{ candidate.score|floatformat:2 }}%</li>
+                {% endfor %}
+            </ul>
+        </div>
+        
+        <form method="post">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="{{ form.subject.id_for_label }}" class="form-label">Email Subject</label>
+                {{ form.subject }}
+            </div>
+            <div class="mb-3">
+                <label for="{{ form.message.id_for_label }}" class="form-label">Email Message</label>
+                {{ form.message }}
+            </div>
+            <button type="submit" class="btn btn-primary">Send Invitations</button>
+        </form>
+    </div>
+</div>
+{% endblock %} 

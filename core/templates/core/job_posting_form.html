@@ -1,0 +1,25 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <h2>Create Job Posting</h2>
+        <form method="post">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="{{ form.title.id_for_label }}" class="form-label">Job Title</label>
+                {{ form.title }}
+            </div>
+            <div class="mb-3">
+                <label for="{{ form.requirements.id_for_label }}" class="form-label">Job Requirements</label>
+                {{ form.requirements }}
+            </div>
+            <div class="mb-3">
+                <label for="{{ form.required_candidates.id_for_label }}" class="form-label">Number of Required Candidates</label>
+                {{ form.required_candidates }}
+            </div>
+            <button type="submit" class="btn btn-primary">Create Job</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
