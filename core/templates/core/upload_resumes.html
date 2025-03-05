@@ -9,11 +9,42 @@
             <div class="card p-3">
                 <label for="resumes">Upload Resumes</label>
                 <input type="file" name="resumes" multiple class="form-control">
-                <button type="submit" class="btn btn-primary mt-2">Upload Resumes</button>
+                <div class="row">
+                    <div class="col-md-2 mt-2">
+                        <button type="submit" class="btn btn-primary mt-2">Upload Resumes</button>
+                    </div>
+                    <div class="col-md-2 mt-2">
+                        <button type="button" class="btn btn-danger mt-2" data-bs-toggle="modal" data-bs-target="#cleanModal">
+                            Clean Resumes
+                        </button>
+                    </div>
+                </div>
+                
+               
+                
             </div>
         </form>        
     </div>
 </div>
+
+ <!-- Confirmation Modal -->
+ <div id="cleanModal" class="modal fade" tabindex="-1" aria-labelledby="cleanModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="cleanModalLabel">Confirm Resume Cleanup</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            Are you sure you want to remove all uploaded resumes? This action cannot be undone.
+        </div>
+        <div class="modal-footer">
+            <button id="confirmCleanButton" class="btn btn-danger">Yes, Clean</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
 <div class="row">
     <div class="col-md-6">
@@ -79,3 +110,4 @@
     </div>
 </div>
 {% endblock %}
+

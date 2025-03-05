@@ -25,5 +25,32 @@
     </div>
     
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Get modal element and confirmation button
+            const confirmCleanButton = document.getElementById("confirmCleanButton");
+            const cleanModalElement = document.getElementById("cleanModal");
+        
+            confirmCleanButton.addEventListener("click", function() {
+                // Get the file input field
+                const fileInput = document.querySelector("input[name='resumes']");
+                
+                if (fileInput) {
+                    fileInput.value = ""; // Clear the selected files
+                }
+        
+                // Get the Bootstrap modal instance
+                const modalInstance = bootstrap.Modal.getInstance(cleanModalElement);
+                
+                // Hide the modal
+                if (modalInstance) {
+                    modalInstance.hide();
+                }
+            });
+        });
+    </script>
+        
+        
+        
 </body>
 </html> 

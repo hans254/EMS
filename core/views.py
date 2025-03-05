@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.core.mail import send_mass_mail
 from django.conf import settings
+import os
 from .models import JobPosting, Applicant, EmailInvitation
 from .forms import JobPostingForm, ApplicantForm, EmailInvitationForm
 from .utils import extract_text_from_pdf, extract_text_from_docx, extract_name_email, calculate_similarity
@@ -119,3 +120,17 @@ def send_invitations(request, job_id):
         'top_candidates': top_candidates,
     }
     return render(request, 'core/send_invitations.html', context)
+
+# def clean_resumes(request):
+#     # Delete all records from the database
+#     Applicant.objects.all().delete()
+    
+#     # Remove all resume files from the upload directory
+#     upload_folder = os.path.join(settings.MEDIA_ROOT, 'resumes')  # Adjust folder name if needed
+#     if os.path.exists(upload_folder):
+#         for file in os.listdir(upload_folder):
+#             file_path = os.path.join(upload_folder, file)
+#             if os.path.isfile(file_path):
+#                 os.remove(file_path)
+    
+#     return redirect('upload_resumes')  # Redirect back to
