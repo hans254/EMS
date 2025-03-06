@@ -18,11 +18,12 @@ def job_posting_create(request):
             return redirect('upload_resumes', job_id=job.id)
     else:
         form = JobPostingForm()
-    return render(request, 'core/job_posting_form.html', {'form': form})
 
-from django.core.paginator import Paginator
-from django.shortcuts import get_object_or_404, render, redirect
-from django.contrib import messages
+    context ={
+        'form': form,
+    }
+    return render(request, 'core/job_posting_form.html', context)
+
 
 def upload_resumes(request, job_id):
     job = get_object_or_404(JobPosting, id=job_id)

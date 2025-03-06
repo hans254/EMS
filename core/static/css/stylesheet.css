@@ -135,7 +135,7 @@ a.item_name{
 .social-links a i{
     font-size: 3rem;
     font-weight: bolder;
-    color: #2e6da4;
+    color: #051d33;
     transition: 1s ease-in-out;
 }
 
@@ -162,7 +162,7 @@ a.item_name{
     text-decoration: none;
     display: inline-block;
     padding: 1px 7px;
-    background: #3287a8;
+    background: #051d33;
     color: #fff;
     border-radius: 100px;
 }
