@@ -6,9 +6,11 @@ import os
 from .models import JobPosting, Applicant, EmailInvitation
 from .forms import JobPostingForm, ApplicantForm, EmailInvitationForm
 from .utils import extract_text_from_pdf, extract_text_from_docx, extract_name_email, calculate_similarity
+from django.core.paginator import Paginator
 
 
 def job_posting_create(request):
+    header = 'Create Job Posting'
     if request.method == 'POST':
         form = JobPostingForm(request.POST)
         if form.is_valid():
@@ -18,16 +20,19 @@ def job_posting_create(request):
         form = JobPostingForm()
     return render(request, 'core/job_posting_form.html', {'form': form})
 
+from django.core.paginator import Paginator
+from django.shortcuts import get_object_or_404, render, redirect
+from django.contrib import messages
+
 def upload_resumes(request, job_id):
     job = get_object_or_404(JobPosting, id=job_id)
 
     if request.method == 'POST':
         form = ApplicantForm(request.POST, request.FILES)
-        resumes = request.FILES.getlist('resumes')  # Allow multiple file uploads
+        resumes = request.FILES.getlist('resumes')
 
         if resumes:
             for resume_file in resumes:
-                # Extract text from resume
                 if resume_file.name.endswith('.pdf'):
                     resume_text = extract_text_from_pdf(resume_file)
                 elif resume_file.name.endswith('.docx'):
@@ -35,17 +40,11 @@ def upload_resumes(request, job_id):
                 else:
                     messages.error(request, f'Unsupported file format: {resume_file.name}')
                     continue
-
-                # Extract name and email
                 name, email = extract_name_email(resume_text)
                 if not name or not email:
                     messages.warning(request, f'Could not extract name and email from {resume_file.name}')
                     continue
-
-                # Calculate similarity score
                 score = calculate_similarity(job.requirements, resume_text)
-
-                # Save applicant details
                 Applicant.objects.create(
                     job=job,
                     name=name,
@@ -60,17 +59,23 @@ def upload_resumes(request, job_id):
     else:
         form = ApplicantForm()
 
-    # Get all candidates sorted by score
     all_candidates = Applicant.objects.filter(job=job).order_by('-score')
     top_candidates = all_candidates[:job.required_candidates]
+
+    queryset = all_candidates  
+    paginator = Paginator(queryset, 3)
+    page_number = request.GET.get('page')
+    queryset = paginator.get_page(page_number)
 
     context = {
         'job': job,
         'form': form,
+        'queryset': queryset,
         'top_candidates': top_candidates,
         'all_candidates': all_candidates
     }
     return render(request, 'core/upload_resumes.html', context)
+
 
 def send_invitations(request, job_id):
     job = get_object_or_404(JobPosting, id=job_id)
@@ -82,25 +87,23 @@ def send_invitations(request, job_id):
             invitation = form.save(commit=False)
             invitation.job = job
             invitation.save()
-            
-            # Prepare emails
+
             emails = []
             for candidate in top_candidates:
-                cleaned_email = candidate.email.strip().rstrip('.')  # Remove trailing spaces and periods
+                cleaned_email = candidate.email.strip().rstrip('.')
                 
                 if '@' not in cleaned_email or '.' not in cleaned_email.split('@')[-1]:
                     messages.error(request, f"Invalid email address: {cleaned_email}")
-                    continue  # Skip invalid email
+                    continue
                 
                 email = (
                     invitation.subject,
                     invitation.message,
                     settings.DEFAULT_FROM_EMAIL,
-                    [cleaned_email],  # Ensure cleaned email is used
+                    [cleaned_email],
                 )
                 emails.append(email)
             
-            # Send emails if there are valid recipients
             if emails:
                 try:
                     send_mass_mail(emails, fail_silently=False)
@@ -120,17 +123,3 @@ def send_invitations(request, job_id):
         'top_candidates': top_candidates,
     }
     return render(request, 'core/send_invitations.html', context)
-
-# def clean_resumes(request):
-#     # Delete all records from the database
-#     Applicant.objects.all().delete()
-    
-#     # Remove all resume files from the upload directory
-#     upload_folder = os.path.join(settings.MEDIA_ROOT, 'resumes')  # Adjust folder name if needed
-#     if os.path.exists(upload_folder):
-#         for file in os.listdir(upload_folder):
-#             file_path = os.path.join(upload_folder, file)
-#             if os.path.isfile(file_path):
-#                 os.remove(file_path)
-    
-#     return redirect('upload_resumes')  # Redirect back to

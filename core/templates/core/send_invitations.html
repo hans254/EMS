@@ -1,30 +1,60 @@
 {% extends 'core/base.html' %}
 
 {% block content %}
-<div class="row">
-    <div class="col-md-8 offset-md-2">
-        <h2>Send Interview Invitations</h2>
-        <div class="mb-4">
-            <h4>Selected Candidates:</h4>
-            <ul>
-                {% for candidate in top_candidates %}
-                <li>{{ candidate.name }} ({{ candidate.email }}) - Score: {{ candidate.score|floatformat:2 }}%</li>
-                {% endfor %}
-            </ul>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-lg border-0">
+                <div class="card-body p-4">
+                    <h2 class="text-center text-primary">Send Interview Invitations</h2>
+                    
+                    <!-- Candidates List -->
+                    <div class="mb-4">
+                        <h4 class="text-secondary">Selected Candidates:</h4>
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Email</th>
+                                        <th>Score (%)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for candidate in top_candidates %}
+                                    <tr>
+                                        <td>{{ candidate.name }}</td>
+                                        <td>{{ candidate.email }}</td>
+                                        <td>{{ candidate.score|floatformat:2 }}</td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="3" class="text-center text-muted">No candidates selected.</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Invitation Form -->
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="{{ form.subject.id_for_label }}" class="form-label fw-bold">Email Subject</label>
+                            {{ form.subject }}
+                        </div>
+                        <div class="mb-3">
+                            <label for="{{ form.message.id_for_label }}" class="form-label fw-bold">Email Message</label>
+                            {{ form.message }}
+                        </div>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg">Send Invitations</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
-        
-        <form method="post">
-            {% csrf_token %}
-            <div class="mb-3">
-                <label for="{{ form.subject.id_for_label }}" class="form-label">Email Subject</label>
-                {{ form.subject }}
-            </div>
-            <div class="mb-3">
-                <label for="{{ form.message.id_for_label }}" class="form-label">Email Message</label>
-                {{ form.message }}
-            </div>
-            <button type="submit" class="btn btn-primary">Send Invitations</button>
-        </form>
     </div>
 </div>
-{% endblock %} 
+{% endblock %}

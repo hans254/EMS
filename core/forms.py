@@ -8,6 +8,10 @@ class JobPostingForm(forms.ModelForm):
         widgets = {
             'requirements': forms.Textarea(attrs={'rows': 5}),
         }
+    def __init__(self, *args, **kwargs):
+        super(JobPostingForm, self).__init__(*args, **kwargs)
+        for field in self.fields:
+            self.fields[field].widget.attrs.update({'class': 'form-control'})
 
 class ApplicantForm(forms.ModelForm):
     resumes = forms.FileField(widget=forms.ClearableFileInput(attrs={'multiple': True}), required=True)
