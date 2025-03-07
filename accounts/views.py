@@ -36,7 +36,7 @@ def login_view(request):
         if user is not None:
             login(request, user)
             messages.success(request, 'Logged in successfully!')
-            return redirect('job_posting_create')
+            return redirect('recruitment_list')
         else:
             messages.error(request, 'Wrong Username or Password. Please try again.')
 

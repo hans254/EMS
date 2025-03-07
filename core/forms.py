@@ -29,7 +29,6 @@ class EmailInvitationForm(forms.ModelForm):
         }
 
 class JobSearchForm(forms.ModelForm):
-    export_to_CSV = forms.BooleanField(required=False)
     class Meta:
         model = JobPosting
         fields = ['title']

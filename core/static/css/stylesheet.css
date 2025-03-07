@@ -10,6 +10,12 @@ body{
     width: auto;
 }
 
+.container{
+    background-color: #e8edf3;
+    border-radius: 10px;
+    padding: 10px;
+}
+
 .title h2{
     font-size: 40px;
     font-weight: bold;
@@ -53,13 +59,12 @@ th{
 /*Styling Header*/
 .header{
     font-family: Georgia, 'Times New Roman', Times, serif;
-    color: #fff;
-    font-size: 50px;
+    color: #1f1d1d;
+    font-size: 40px;
     text-align: center;
     width: 100%;
     display: block;
     font-weight: bold;
-    margin-top: 2px;
     margin-bottom: 2px;
 }
 
@@ -97,7 +102,7 @@ a.item_name{
 
 .modal-header{
     padding: 2px 16px;
-    background-color: #2e6da4;
+    background-color: #346692;
     color: #fff;
 }
 
@@ -107,7 +112,7 @@ a.item_name{
  
 .modal-footer{
     padding: 2px 16px;
-    background-color: #2e6da4;
+    background-color: #346692;
     color: #fff; 
 }
 

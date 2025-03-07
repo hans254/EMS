@@ -25,7 +25,8 @@ urlpatterns = [
     path('accounts/', include('accounts.urls')),
     path("job_posting_create/", views.job_posting_create, name="job_posting_create"),
     path('upload-resumes/<int:job_id>/', views.upload_resumes, name='upload_resumes'),
-    path('', views.recruitment_list, name='recruitment_list'),
+    path('recruitment_list', views.recruitment_list, name='recruitment_list'),
     path('send-invitations/<int:job_id>/', views.send_invitations, name='send_invitations'),
     path("delete_items/<int:pk>/", views.delete_items, name="delete_items"),
+    path('job_detail/<str:pk>/', views.job_detail, name='job_detail'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

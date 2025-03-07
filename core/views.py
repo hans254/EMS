@@ -21,20 +21,6 @@ def recruitment_list(request):
         if title:
             queryset = queryset.filter(title=title) 
 
-        # if item_name:
-        #     queryset = queryset.filter(item_name__icontains=item_name)
-
-        # CSV Export Logic
-        if form.cleaned_data.get('export_to_CSV', False):
-            response = HttpResponse(content_type='text/csv')
-            response['Content-Disposition'] = 'attachment; filename="List_of_Jobs.csv"'
-            writer = csv.writer(response)
-            writer.writerow(['CATEGORY', 'ITEM_NAME', 'QUANTITY'])
-
-            for item in queryset:
-                writer.writerow([item.category.name, item.item_name, item.quantity])
-            return response
-
     # Pagination
     paginator = Paginator(queryset, 7)
     page_number = request.GET.get('page')
@@ -170,4 +156,12 @@ def delete_items(request, pk):
         queryset.delete()
         messages.success(request, 'Deleted Successfully')
         return redirect('recruitment_list')
-    return render(request, 'core/delete_items.html')    
+    return render(request, 'core/delete_items.html')  
+
+# @login_required
+def job_detail(request, pk):
+    queryset = JobPosting.objects.get(id=pk)
+    context = {
+        'queryset': queryset,
+    }
+    return render(request, 'core/job_detail.html', context)  

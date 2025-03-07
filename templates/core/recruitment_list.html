@@ -18,9 +18,6 @@
                         
                     </form>
                     <a href="/job_posting_create"><div class="btn btn-primary mybutton">Upload Job</div></a><br><br>
-                    <a href="/list_history"><div class="btn btn-primary mybutton">List History</div></a><br><br>
-                    <a href="/issued_items"><div class="btn btn-primary mybutton">Issued Items</div></a><br><br>
-                    <a href="/recieved_items"><div class="btn btn-primary mybutton">Recieved Items</div></a><br><br>
                 </div><!---End Col--->
                 
                 <br>
@@ -42,10 +39,10 @@
                                 <tr>
                                     
                                     
-                                    <td>{{ instance.title }}</td>
-                                    <td class="item_name"> <a href="">{{instance.requirements}}</a></td>
+                                    <td style="font-weight: bold; font-family: 'Courier New', Courier, monospace;">{{ instance.title }}</td>
+                                    <td class="item_name"> <a href="{% url 'job_detail' instance.id %}">{{instance.requirements|truncatewords:5 }}</a></td>
                                     <td class="item_name">{{instance.required_candidates}}</td>
-                                    <td><a href="">{{ instance.created_at }}</a></td>
+                                    <td>{{ instance.created_at }}</td>
                                     <td><a href="{% url 'delete_items' instance.id %}"><i class='bx bxs-trash'></i></a></td>
                                 </tr>
             
