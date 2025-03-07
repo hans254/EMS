@@ -1,9 +1,12 @@
 asgiref==3.8.1
 click==8.1.8
-Django==5.1.6
+crispy-bootstrap4==2024.10
+Django==4.2
 django-crispy-forms==2.3
+django-widget-tweaks==1.5.0
 joblib==1.4.2
 lxml==5.3.1
+mysqlclient==2.2.7
 nltk==3.9.1
 numpy==2.2.3
 PyPDF2==3.0.1

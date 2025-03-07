@@ -27,3 +27,9 @@ class EmailInvitationForm(forms.ModelForm):
         widgets = {
             'message': forms.Textarea(attrs={'rows': 5}),
         }
+
+class JobSearchForm(forms.ModelForm):
+    export_to_CSV = forms.BooleanField(required=False)
+    class Meta:
+        model = JobPosting
+        fields = ['title']

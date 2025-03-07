@@ -1,0 +1,61 @@
+{% load static %}
+{% load crispy_forms_tags %}
+
+<body>
+{% include 'core/base.html' %}
+{% block content %}
+    <main class="container">
+        
+        
+        <div class="bg-body-tertiary p-5 rounded">
+            
+            <div class="row">
+                <div class="col-sm-2 mt-5">
+                    <form method="post" action="">{% csrf_token %}
+                        {{form|crispy}}
+                        <br>
+                        <input class="btn btn-primary mybutton" type="submit" value="Search"/><br><br>
+                        
+                    </form>
+                    <a href="/job_posting_create"><div class="btn btn-primary mybutton">Upload Job</div></a><br><br>
+                    <a href="/list_history"><div class="btn btn-primary mybutton">List History</div></a><br><br>
+                    <a href="/issued_items"><div class="btn btn-primary mybutton">Issued Items</div></a><br><br>
+                    <a href="/recieved_items"><div class="btn btn-primary mybutton">Recieved Items</div></a><br><br>
+                </div><!---End Col--->
+                
+                <br>
+                <div class="col-sm-9">
+                    <div class="header">{{ header }}</div>
+                    <div class="display_table">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    
+                                    <th>JOB NAME</th>
+                                    <th>REQUIREMENTS</th>
+                                    <th>NUMBER OF CANDIDATES</th>
+                                    <th>CREATED DATE</th>
+                                    <th>DELETE</th>
+                                </tr>
+                            </thead>
+                            {% for instance in queryset.object_list %}
+                                <tr>
+                                    
+                                    
+                                    <td>{{ instance.title }}</td>
+                                    <td class="item_name"> <a href="">{{instance.requirements}}</a></td>
+                                    <td class="item_name">{{instance.required_candidates}}</td>
+                                    <td><a href="">{{ instance.created_at }}</a></td>
+                                    <td><a href="{% url 'delete_items' instance.id %}"><i class='bx bxs-trash'></i></a></td>
+                                </tr>
+            
+                            {% endfor %}
+                        </table>
+                        {% include 'core/pagination.html' %}
+                </div>
+                
+            </div><!---End of row----->
+        </div>
+    </main>
+{% endblock %}
+</body>

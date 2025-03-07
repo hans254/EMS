@@ -4,10 +4,49 @@ from django.core.mail import send_mass_mail
 from django.conf import settings
 import os
 from .models import JobPosting, Applicant, EmailInvitation
-from .forms import JobPostingForm, ApplicantForm, EmailInvitationForm
+from .forms import JobPostingForm, ApplicantForm, EmailInvitationForm, JobSearchForm
 from .utils import extract_text_from_pdf, extract_text_from_docx, extract_name_email, calculate_similarity
 from django.core.paginator import Paginator
 
+
+def recruitment_list(request):
+    header = 'List of Posted Jobs'
+    queryset = JobPosting.objects.all().order_by("-created_at")
+    form = JobSearchForm(request.POST or None)
+
+    if request.method == 'POST' and form.is_valid():
+        title = form.cleaned_data.get('title')
+        # item_name = form.cleaned_data.get('item_name')
+
+        if title:
+            queryset = queryset.filter(title=title) 
+
+        # if item_name:
+        #     queryset = queryset.filter(item_name__icontains=item_name)
+
+        # CSV Export Logic
+        if form.cleaned_data.get('export_to_CSV', False):
+            response = HttpResponse(content_type='text/csv')
+            response['Content-Disposition'] = 'attachment; filename="List_of_Jobs.csv"'
+            writer = csv.writer(response)
+            writer.writerow(['CATEGORY', 'ITEM_NAME', 'QUANTITY'])
+
+            for item in queryset:
+                writer.writerow([item.category.name, item.item_name, item.quantity])
+            return response
+
+    # Pagination
+    paginator = Paginator(queryset, 7)
+    page_number = request.GET.get('page')
+    queryset = paginator.get_page(page_number)
+
+    context = {
+        'form': form,
+        'queryset': queryset,
+        'header': header,
+    }
+
+    return render(request, 'core/recruitment_list.html', context)
 
 def job_posting_create(request):
     header = 'Create Job Posting'
@@ -114,7 +153,7 @@ def send_invitations(request, job_id):
             else:
                 messages.error(request, 'No valid email addresses to send invitations.')
 
-            return redirect('job_posting_create')
+            return redirect('recruitment_list')
     else:
         form = EmailInvitationForm()
     
@@ -124,3 +163,11 @@ def send_invitations(request, job_id):
         'top_candidates': top_candidates,
     }
     return render(request, 'core/send_invitations.html', context)
+
+def delete_items(request, pk):
+    queryset = JobPosting.objects.get(id=pk)
+    if request.method == 'POST':
+        queryset.delete()
+        messages.success(request, 'Deleted Successfully')
+        return redirect('recruitment_list')
+    return render(request, 'core/delete_items.html')    
