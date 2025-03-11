@@ -1,116 +1,118 @@
 {% extends 'core/base.html' %}
 
 {% block content %}
-<div class="row mb-4">
-    <div class="col-12">
-        <div class="header">
-            <h2 class="navbar-expand-lg">Upload Resumes for {{ job.title }}</h2>
-        </div>
-        <form method="post" enctype="multipart/form-data">
-            {% csrf_token %}
-            <div class="card p-3">
-                <label for="resumes">Upload Resumes</label>
-                <input type="file" name="resumes" multiple class="form-control">
-                <div class="row">
-                    <div class="col-md-2 mt-2">
-                        <button type="submit" class="btn btn-primary mt-2">Upload Resumes</button>
+<main class="container">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="header">
+                <h2 class="header navbar-expand-lg">Upload Resumes for {{ job.title }}</h2>
+            </div>
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="card p-3">
+                    <label for="resumes">Upload Resumes</label>
+                    <input type="file" name="resumes" multiple class="form-control">
+                    <div class="row">
+                        <div class="col-md-2 mt-2">
+                            <button type="submit" class="btn btn-primary mt-2">Upload Resumes</button>
+                        </div>
+                        <div class="col-md-2 mt-2">
+                            <button type="button" class="btn btn-danger mt-2" data-bs-toggle="modal" data-bs-target="#cleanModal">
+                                Clean Resumes
+                            </button>
+                        </div>
                     </div>
-                    <div class="col-md-2 mt-2">
-                        <button type="button" class="btn btn-danger mt-2" data-bs-toggle="modal" data-bs-target="#cleanModal">
-                            Clean Resumes
-                        </button>
-                    </div>
+                    
+                   
+                    
                 </div>
-                
-               
-                
-            </div>
-        </form>        
-    </div>
-</div>
-
- <!-- Confirmation Modal -->
- <div id="cleanModal" class="modal fade" tabindex="-1" aria-labelledby="cleanModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="cleanModalLabel">Confirm Resume Cleanup</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-            Are you sure you want to remove all uploaded resumes? This action cannot be undone.
-        </div>
-        <div class="modal-footer">
-            <button id="confirmCleanButton" class="btn btn-danger">Yes, Clean</button>
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-<div class="row">
-    <div class="col-md-6">
-        <div class="card">
-            <div class="card-header bg-success text-white">
-                <h3 class="card-title mb-0">Top {{ job.required_candidates }} Qualified Candidates</h3>
-            </div>
-            <div class="card-body">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Email</th>
-                            <th>Score</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for candidate in top_candidates %}
-                        <tr>
-                            <td>{{ candidate.name }}</td>
-                            <td>{{ candidate.email }}</td>
-                            <td>{{ candidate.score|floatformat:2 }}%</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-                
-                {% if top_candidates %}
-                <a href="{% url 'send_invitations' job.id %}" class="btn btn-success">
-                    Send Interview Invitations to Selected Candidates
-                </a>
-                {% endif %}
-            </div>
+            </form>        
         </div>
     </div>
     
-    <div class="col-md-6">
-        <div class="card">
-            <div class="card-header bg-primary text-white">
-                <h3 class="card-title mb-0">All Candidates</h3>
+     <!-- Confirmation Modal -->
+     <div id="cleanModal" class="modal fade" tabindex="-1" aria-labelledby="cleanModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="cleanModalLabel">Confirm Resume Cleanup</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="card-body">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Email</th>
-                            <th>Score</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for candidate in all_candidates %}
-                        <tr {% if candidate in top_candidates %}class="table-success"{% endif %}>
-                            <td>{{ candidate.name }}</td>
-                            <td>{{ candidate.email }}</td>
-                            <td>{{ candidate.score|floatformat:2 }}%</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-                {% include 'core/pagination.html' %}
+            <div class="modal-body">
+                Are you sure you want to remove all uploaded resumes? This action cannot be undone.
+            </div>
+            <div class="modal-footer">
+                <button id="confirmCleanButton" class="btn btn-danger">Yes, Clean</button>
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h3 class="card-title mb-0">Top {{ job.required_candidates }} Qualified Candidates</h3>
+                </div>
+                <div class="card-body">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Score</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for candidate in top_candidates %}
+                            <tr>
+                                <td>{{ candidate.name }}</td>
+                                <td>{{ candidate.email }}</td>
+                                <td>{{ candidate.score|floatformat:2 }}%</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    
+                    {% if top_candidates %}
+                    <a href="{% url 'send_invitations' job.id %}" class="btn btn-success">
+                        Send Interview Invitations to Selected Candidates
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="card-title mb-0">All Candidates</h3>
+                </div>
+                <div class="card-body">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Score</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for candidate in all_candidates %}
+                            <tr {% if candidate in top_candidates %}class="table-success"{% endif %}>
+                                <td>{{ candidate.name }}</td>
+                                <td>{{ candidate.email }}</td>
+                                <td>{{ candidate.score|floatformat:2 }}%</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {% include 'core/pagination.html' %}
+                </div>
             </div>
         </div>
     </div>
-</div>
+</main>
 {% endblock %}
 
