@@ -29,4 +29,5 @@ urlpatterns = [
     path('send-invitations/<int:job_id>/', views.send_invitations, name='send_invitations'),
     path("delete_items/<int:pk>/", views.delete_items, name="delete_items"),
     path('job_detail/<str:pk>/', views.job_detail, name='job_detail'),
+    path('select-folder/', views.select_folder, name='select_folder'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -5,13 +5,24 @@
     <div class="row mb-4">
         <div class="col-12">
             <div class="header">
-                <h2 class="header navbar-expand-lg">Upload Resumes for {{ job.title }}</h2>
+                <h2 class="header navbar-expand-lg" style="padding-top: 10px;">Upload Resumes for {{ job.title }}</h2>
             </div>
             <form method="post" enctype="multipart/form-data">
                 {% csrf_token %}
                 <div class="card p-3">
+                    {{ form.as_p }}
+                    <p id="folder-path">No folder selected</p><br>
+                    <div class="row">
+                        <div class="col-md-4 mt-2">
+                            <button type="button" class="btn btn-primary mt-2" onclick="selectFolder()">Choose Destination Folder</button>
+                        </div>
+                        <div class="col-md-2 mt-2">
+                            <button type="submit" class="btn btn-primary mt-2">Download <i class='bx bxs-download' style="font-size: 20px; font-weight: 900; align-items: center; margin-left: 5px;"></i></button><br>
+                        <br>
+                        </div>
+                    </div>
                     <label for="resumes">Upload Resumes</label>
-                    <input type="file" name="resumes" multiple class="form-control">
+                    <input type="file" name="resumes" multiple class="spacer form-control" style="margin-bottom: 10px;"><br>
                     <div class="row">
                         <div class="col-md-2 mt-2">
                             <button type="submit" class="btn btn-primary mt-2">Upload Resumes</button>
@@ -21,10 +32,7 @@
                                 Clean Resumes
                             </button>
                         </div>
-                    </div>
-                    
-                   
-                    
+                    </div>  
                 </div>
             </form>        
         </div>
@@ -115,4 +123,3 @@
     </div>
 </main>
 {% endblock %}
-

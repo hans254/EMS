@@ -14,11 +14,20 @@ class JobPostingForm(forms.ModelForm):
             self.fields[field].widget.attrs.update({'class': 'form-control'})
 
 class ApplicantForm(forms.ModelForm):
-    resumes = forms.FileField(widget=forms.ClearableFileInput(attrs={'multiple': True}), required=True)
+    drive_url = forms.URLField(
+        label='Google Drive URL',
+        required=False
+    )
+    destination_folder = forms.CharField(
+        label='Destination Folder',
+        required=False,
+        widget=forms.HiddenInput()
+    )
 
     class Meta:
         model = Applicant
-        fields = ['resumes']
+        fields = ['drive_url', 'destination_folder']
+
 
 class EmailInvitationForm(forms.ModelForm):
     class Meta:

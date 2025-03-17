@@ -16,6 +16,10 @@ body{
     padding: 10px;
 }
 
+.spacer{
+    margin-bottom: 2px;
+}
+
 .title h2{
     font-size: 40px;
     font-weight: bold;
@@ -37,6 +41,7 @@ body{
 .table tr:nth-child(odd){
     background: #88CAE4;
 }
+
 
 .table tr:nth-child(even){
     background: #dae5f4;
