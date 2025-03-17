@@ -9,7 +9,7 @@
             </div>
             <form method="post" enctype="multipart/form-data">
                 {% csrf_token %}
-                <div class="card p-3">
+                <div class="card p-3">    
                     {{ form.as_p }}
                     <p id="folder-path">No folder selected</p><br>
                     <div class="row">
@@ -21,6 +21,7 @@
                         <br>
                         </div>
                     </div>
+                    
                     <label for="resumes">Upload Resumes</label>
                     <input type="file" name="resumes" multiple class="spacer form-control" style="margin-bottom: 10px;"><br>
                     <div class="row">
@@ -31,8 +32,7 @@
                             <button type="button" class="btn btn-danger mt-2" data-bs-toggle="modal" data-bs-target="#cleanModal">
                                 Clean Resumes
                             </button>
-                        </div>
-                    </div>  
+                    </div>
                 </div>
             </form>        
         </div>

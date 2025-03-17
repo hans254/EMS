@@ -42,6 +42,9 @@ body{
     background: #88CAE4;
 }
 
+.row{
+    display: flex;
+}
 
 .table tr:nth-child(even){
     background: #dae5f4;

@@ -16,6 +16,7 @@ from tkinter import Tk
 from tkinter.filedialog import askdirectory
 from io import FileIO
 import re
+from django.contrib.auth.decorators import login_required
 
 # Path to your credentials file
 CREDENTIALS_FILE = 'credentials.json'
@@ -23,6 +24,7 @@ CREDENTIALS_FILE = 'credentials.json'
 # Scopes for Google Drive API
 SCOPES = ['https://www.googleapis.com/auth/drive.readonly']
 
+@login_required
 def extract_file_or_folder_id(url):
     """
     Extract the file or folder ID from a Google Drive URL.
@@ -51,6 +53,7 @@ def extract_file_or_folder_id(url):
     # If no match is found, raise an error
     raise ValueError("Invalid Google Drive URL. Could not extract file or folder ID.")
 
+@login_required
 def download_file_from_google_drive(file_id, destination_folder):
     """Download a file from Google Drive using its file ID."""
     creds = service_account.Credentials.from_service_account_file(CREDENTIALS_FILE, scopes=SCOPES)
@@ -80,6 +83,7 @@ def download_file_from_google_drive(file_id, destination_folder):
     except Exception as e:
         raise Exception(f"An error occurred while downloading the file: {str(e)}")
 
+@login_required
 def list_files_in_folder(folder_id):
     """List all files in a Google Drive folder."""
     creds = service_account.Credentials.from_service_account_file(CREDENTIALS_FILE, scopes=SCOPES)
@@ -99,7 +103,7 @@ def list_files_in_folder(folder_id):
         raise Exception(f"An error occurred while listing files: {str(e)}")
 
 
-
+@login_required
 def recruitment_list(request):
     header = 'List of Posted Jobs'
     queryset = JobPosting.objects.all().order_by("-created_at")
@@ -125,6 +129,7 @@ def recruitment_list(request):
 
     return render(request, 'core/recruitment_list.html', context)
 
+@login_required
 def job_posting_create(request):
     header = 'Create Job Posting'
     if request.method == 'POST':
@@ -140,7 +145,7 @@ def job_posting_create(request):
     }
     return render(request, 'core/job_posting_form.html', context)
 
-
+@login_required
 def upload_resumes(request, job_id):
     job = get_object_or_404(JobPosting, id=job_id)
     form = ApplicantForm()
@@ -234,7 +239,7 @@ def upload_resumes(request, job_id):
     }
     return render(request, 'core/upload_resumes.html', context)
 
-
+@login_required
 def select_folder(request):
     if request.method == 'GET':
         root = Tk()
@@ -247,7 +252,7 @@ def select_folder(request):
         else:
             return JsonResponse({'error': 'No folder selected'}, status=400)
 
-
+@login_required
 def send_invitations(request, job_id):
     job = get_object_or_404(JobPosting, id=job_id)
     top_candidates = Applicant.objects.filter(job=job).order_by('-score')[:job.required_candidates]
@@ -295,6 +300,7 @@ def send_invitations(request, job_id):
     }
     return render(request, 'core/send_invitations.html', context)
 
+@login_required
 def delete_items(request, pk):
     queryset = JobPosting.objects.get(id=pk)
     if request.method == 'POST':
@@ -303,7 +309,7 @@ def delete_items(request, pk):
         return redirect('recruitment_list')
     return render(request, 'core/delete_items.html')  
 
-# @login_required
+@login_required
 def job_detail(request, pk):
     queryset = JobPosting.objects.get(id=pk)
     context = {

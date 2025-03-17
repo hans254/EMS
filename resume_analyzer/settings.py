@@ -149,3 +149,6 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'hansfidel6@gmail.com'
 EMAIL_HOST_PASSWORD = 'jczo deig ciar pcwu'
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER 
+
+LOGIN_URL = '/accounts/login/'
+LOGIN_REDIRECT_URL = '/'
