@@ -24,7 +24,7 @@ CREDENTIALS_FILE = 'credentials.json'
 # Scopes for Google Drive API
 SCOPES = ['https://www.googleapis.com/auth/drive.readonly']
 
-@login_required
+
 def extract_file_or_folder_id(url):
     """
     Extract the file or folder ID from a Google Drive URL.
@@ -53,7 +53,7 @@ def extract_file_or_folder_id(url):
     # If no match is found, raise an error
     raise ValueError("Invalid Google Drive URL. Could not extract file or folder ID.")
 
-@login_required
+
 def download_file_from_google_drive(file_id, destination_folder):
     """Download a file from Google Drive using its file ID."""
     creds = service_account.Credentials.from_service_account_file(CREDENTIALS_FILE, scopes=SCOPES)
@@ -83,7 +83,7 @@ def download_file_from_google_drive(file_id, destination_folder):
     except Exception as e:
         raise Exception(f"An error occurred while downloading the file: {str(e)}")
 
-@login_required
+
 def list_files_in_folder(folder_id):
     """List all files in a Google Drive folder."""
     creds = service_account.Credentials.from_service_account_file(CREDENTIALS_FILE, scopes=SCOPES)
@@ -145,6 +145,7 @@ def job_posting_create(request):
     }
     return render(request, 'core/job_posting_form.html', context)
 
+
 @login_required
 def upload_resumes(request, job_id):
     job = get_object_or_404(JobPosting, id=job_id)
@@ -159,64 +160,69 @@ def upload_resumes(request, job_id):
             drive_url = form.cleaned_data.get('drive_url', '')
             destination_folder = form.cleaned_data.get('destination_folder', '')
 
+            # Check if destination folder is selected
+            if not destination_folder:
+                messages.error(request, 'Select folder first before proceeding to download.')
+                return redirect('upload_resumes', job_id=job.id)
+
             if drive_url:
                 try:
                     resource_id, resource_type = extract_file_or_folder_id(drive_url)
 
                     if resource_type == 'file':
                         file_path = download_file_from_google_drive(resource_id, destination_folder)
-                        return render(request, 'core/success.html', {
-                            'file_path': file_path,
-                            'destination_folder': destination_folder
-                        })
+                        messages.success(request, 'Resumes have been downloaded successfully.')
                     elif resource_type == 'folder':
                         files = list_files_in_folder(resource_id)
                         downloaded_files = [
                             download_file_from_google_drive(file['id'], destination_folder) for file in files
                         ]
-                        return render(request, 'core/success.html', {
-                            'file_paths': downloaded_files,
-                            'destination_folder': destination_folder
-                        })
+                        messages.success(request, f'{len(downloaded_files)} resumes have been downloaded successfully.')
                 except ValueError as e:
-                    return render(request, 'core/error.html', {'error': str(e)})
+                    messages.error(request, f'Error: {str(e)}')
                 except Exception as e:
-                    return render(request, 'core/error.html', {'error': f"An error occurred: {str(e)}"})
+                    messages.error(request, f'An error occurred: {str(e)}')
 
         # Handling Google Drive URL upload
         if google_drive_url:
-            applicant = Applicant.objects.create(job=job, name="Unknown", email="Unknown", url=google_drive_url)
-            result = import_resumes_from_drive(applicant)
+            try:
+                applicant = Applicant.objects.create(job=job, name="Unknown", email="Unknown", url=google_drive_url)
+                result = import_resumes_from_drive(applicant)
 
-            if "error" in result:
-                messages.error(request, result["error"])
-            else:
-                messages.success(request, result["success"])
+                if "error" in result:
+                    messages.error(request, result["error"])
+                else:
+                    messages.success(request, result["success"])
+            except Exception as e:
+                messages.error(request, f'Error importing resumes from Google Drive: {str(e)}')
 
         # Handling file uploads
         if resumes:
             for resume_file in resumes:
-                if resume_file.name.endswith('.pdf'):
-                    resume_text = extract_text_from_pdf(resume_file)
-                elif resume_file.name.endswith('.docx'):
-                    resume_text = extract_text_from_docx(resume_file)
-                else:
-                    messages.error(request, f'Unsupported file format: {resume_file.name}')
-                    continue
-                
-                name, email = extract_name_email(resume_text)
-                if not name or not email:
-                    messages.warning(request, f'Could not extract name and email from {resume_file.name}')
-                    continue
-                
-                score = calculate_similarity(job.requirements, resume_text)
-                Applicant.objects.create(
-                    job=job,
-                    name=name,
-                    email=email,
-                    resume=resume_file,
-                    score=score
-                )
+                try:
+                    if resume_file.name.endswith('.pdf'):
+                        resume_text = extract_text_from_pdf(resume_file)
+                    elif resume_file.name.endswith('.docx'):
+                        resume_text = extract_text_from_docx(resume_file)
+                    else:
+                        messages.error(request, f'Unsupported file format: {resume_file.name}')
+                        continue
+
+                    name, email = extract_name_email(resume_text)
+                    if not name or not email:
+                        messages.warning(request, f'Could not extract name and email from {resume_file.name}')
+                        continue
+
+                    score = calculate_similarity(job.requirements, resume_text)
+                    Applicant.objects.create(
+                        job=job,
+                        name=name,
+                        email=email,
+                        resume=resume_file,
+                        score=score
+                    )
+                except Exception as e:
+                    messages.error(request, f'Error processing {resume_file.name}: {str(e)}')
 
             messages.success(request, 'Resumes uploaded successfully')
             return redirect('upload_resumes', job_id=job.id)
@@ -239,7 +245,7 @@ def upload_resumes(request, job_id):
     }
     return render(request, 'core/upload_resumes.html', context)
 
-@login_required
+# @login_required
 def select_folder(request):
     if request.method == 'GET':
         root = Tk()

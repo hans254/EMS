@@ -36,10 +36,10 @@
         
           {% else %}
           <li class="nav-item">
-            <a class="nav-link" href="{% url 'login' %}">Login</a>
+            <a class="nav-link" style="color: #fff; font-weight: bold;" href="{% url 'login' %}">Login</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="{% url 'register' %}">Register</a>
+            <a class="nav-link" style="color: #fff; font-weight: bold;"  href="{% url 'register' %}">Register</a>
           </li>
           {% endif %}
         </ul>
@@ -107,9 +107,9 @@
             setTimeout(function () {
                 let messages = document.querySelector(".messages");
                 if (messages) {
-                    messages.style.transition = "opacity 0.5s ease";
+                    messages.style.transition = "opacity 5s ease";
                     messages.style.opacity = "0";
-                    setTimeout(() => messages.remove(), 500); // Remove after fade-out
+                    setTimeout(() => messages.remove(), 1000); // Remove after fade-out
                 }
             }, 2000);
         </script>

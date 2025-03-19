@@ -13,10 +13,18 @@ class JobPostingForm(forms.ModelForm):
         for field in self.fields:
             self.fields[field].widget.attrs.update({'class': 'form-control'})
 
+
+
 class ApplicantForm(forms.ModelForm):
     drive_url = forms.URLField(
         label='Google Drive URL',
-        required=False
+        required=False,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Enter Google Drive URL',
+            'aria-label': 'Google Drive URL',
+            'aria-describedby': 'drive-url-help'
+        })
     )
     destination_folder = forms.CharField(
         label='Destination Folder',
