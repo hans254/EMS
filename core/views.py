@@ -117,7 +117,7 @@ def recruitment_list(request):
             queryset = queryset.filter(title=title) 
 
     # Pagination
-    paginator = Paginator(queryset, 7)
+    paginator = Paginator(queryset, 5)
     page_number = request.GET.get('page')
     queryset = paginator.get_page(page_number)
 
@@ -146,6 +146,9 @@ def job_posting_create(request):
     return render(request, 'core/job_posting_form.html', context)
 
 
+from django.core.mail import send_mail
+from django.conf import settings
+
 @login_required
 def upload_resumes(request, job_id):
     job = get_object_or_404(JobPosting, id=job_id)
@@ -156,16 +159,17 @@ def upload_resumes(request, job_id):
         resumes = request.FILES.getlist('resumes')
         google_drive_url = request.POST.get('url', '').strip()
 
+        # Validate form before accessing cleaned_data
         if form.is_valid():
             drive_url = form.cleaned_data.get('drive_url', '')
             destination_folder = form.cleaned_data.get('destination_folder', '')
 
-            # Check if destination folder is selected
-            if not destination_folder:
-                messages.error(request, 'Select folder first before proceeding to download.')
-                return redirect('upload_resumes', job_id=job.id)
-
+            # --- Handling Google Drive Resume Download ---
             if drive_url:
+                if not destination_folder:
+                    messages.error(request, 'Select folder first before proceeding to download.')
+                    return redirect('upload_resumes', job_id=job.id)
+
                 try:
                     resource_id, resource_type = extract_file_or_folder_id(drive_url)
 
@@ -178,13 +182,17 @@ def upload_resumes(request, job_id):
                             download_file_from_google_drive(file['id'], destination_folder) for file in files
                         ]
                         messages.success(request, f'{len(downloaded_files)} resumes have been downloaded successfully.')
+
+                    # **Clear drive_url field after successful download**
+                    form = ApplicantForm(initial={'drive_url': '', 'destination_folder': destination_folder})
+
                 except ValueError as e:
                     messages.error(request, f'Error: {str(e)}')
                 except Exception as e:
                     messages.error(request, f'An error occurred: {str(e)}')
 
-        # Handling Google Drive URL upload
-        if google_drive_url:
+        # --- Handling Google Drive URL Upload ---
+        elif google_drive_url:
             try:
                 applicant = Applicant.objects.create(job=job, name="Unknown", email="Unknown", url=google_drive_url)
                 result = import_resumes_from_drive(applicant)
@@ -196,7 +204,7 @@ def upload_resumes(request, job_id):
             except Exception as e:
                 messages.error(request, f'Error importing resumes from Google Drive: {str(e)}')
 
-        # Handling file uploads
+        # --- Handling Direct File Upload (Local Resumes) ---
         if resumes:
             for resume_file in resumes:
                 try:
@@ -231,6 +239,16 @@ def upload_resumes(request, job_id):
     all_candidates = Applicant.objects.filter(job=job).order_by('-score')
     top_candidates = all_candidates[:job.required_candidates]
 
+    # # Send regret emails to unqualified applicants
+    # min_qualifying_score = job.min_score  # Define in JobPosting model
+    # unqualified_applicants = Applicant.objects.filter(job=job, score__lt=min_qualifying_score)
+
+    # if unqualified_applicants.exists():
+    #     for applicant in unqualified_applicants:
+    #         send_regret_email(applicant)
+
+    #     messages.success(request, f"Regret emails sent to {unqualified_applicants.count()} unqualified applicants.")
+
     # Pagination
     paginator = Paginator(all_candidates, 3)
     page_number = request.GET.get('page')
@@ -238,7 +256,7 @@ def upload_resumes(request, job_id):
 
     context = {
         'job': job,
-        'form': form,
+        'form': form,  # Ensure updated form is sent to the template
         'queryset': queryset,
         'top_candidates': top_candidates,
         'all_candidates': all_candidates

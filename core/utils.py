@@ -50,3 +50,28 @@ def calculate_similarity(job_description, resume_text):
     similarity_score = cosine_similarity(vectors[0], vectors[1])[0][0]
     
     return round(similarity_score * 100, 2)
+
+from django.core.mail import send_mail
+from django.conf import settings
+
+def send_regret_email(applicant):
+    subject = "Application Update - Regret Notification"
+    message = f"""
+    Dear {applicant.name},
+
+    Thank you for applying for the position at {applicant.job.title}. 
+    After careful consideration, we regret to inform you that you were not selected for this role.
+
+    We appreciate your interest in our company and encourage you to apply for future opportunities.
+
+    Best regards,  
+    Hiring Team
+    """
+    
+    send_mail(
+        subject,
+        message,
+        settings.EMAIL_HOST_USER,
+        [applicant.email],
+        fail_silently=False,
+    )

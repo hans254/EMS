@@ -118,6 +118,13 @@
                     </table>
                     {% include 'core/pagination.html' %}
                 </div>
+                <form method="post" action="{% url 'upload_resumes' job.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">
+                        Send Regret Emails
+                    </button>
+                </form>
+                
             </div>
         </div>
     </div>
