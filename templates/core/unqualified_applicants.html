@@ -1,0 +1,39 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<div class="col-md-6">
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h3 class="card-title mb-0">All Candidates</h3>
+        </div>
+        <div class="card-body">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Score</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for candidate in all_candidates %}
+                    <tr {% if candidate in top_candidates %}class="table-success"{% endif %}>
+                        <td>{{ candidate.name }}</td>
+                        <td>{{ candidate.email }}</td>
+                        <td>{{ candidate.score|floatformat:2 }}%</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% include 'core/pagination.html' %}
+        </div>
+        <!-- <form method="post" action="{% url 'upload_resumes' job.id %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">
+                Send Regret Emails
+            </button>
+        </form> -->
+        
+    </div>
+</div>
+{% endblock %}

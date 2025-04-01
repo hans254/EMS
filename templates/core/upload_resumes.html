@@ -84,7 +84,7 @@
                     </table>
                     
                     {% if top_candidates %}
-                    <a href="{% url 'send_invitations' job.id %}" class="btn btn-success">
+                    <a href="{% url 'send_invitations' job.id %}" class="btn btn-success" style="margin: 10px 0 0 40px;">
                         Send Interview Invitations to Selected Candidates
                     </a>
                     {% endif %}
@@ -118,12 +118,13 @@
                     </table>
                     {% include 'core/pagination.html' %}
                 </div>
-                <form method="post" action="{% url 'upload_resumes' job.id %}">
+                <form method="post" action="{% url 'send_regret_emails' job.id %}">
                     {% csrf_token %}
                     <button type="submit" class="btn btn-danger">
                         Send Regret Emails
                     </button>
                 </form>
+                
                 
             </div>
         </div>

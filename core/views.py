@@ -3,6 +3,12 @@ from django.contrib import messages
 from django.core.mail import send_mass_mail
 from django.conf import settings
 import os
+from django.shortcuts import get_object_or_404, redirect
+from django.contrib import messages
+from django.core.mail import send_mail
+from django.conf import settings
+from .models import Applicant, JobPosting
+from .utils import send_regret_email
 from .models import JobPosting, Applicant, EmailInvitation
 from .forms import JobPostingForm, ApplicantForm, EmailInvitationForm, JobSearchForm
 from .utils import extract_text_from_pdf, extract_text_from_docx, extract_name_email, calculate_similarity
@@ -239,16 +245,7 @@ def upload_resumes(request, job_id):
     all_candidates = Applicant.objects.filter(job=job).order_by('-score')
     top_candidates = all_candidates[:job.required_candidates]
 
-    # # Send regret emails to unqualified applicants
-    # min_qualifying_score = job.min_score  # Define in JobPosting model
-    # unqualified_applicants = Applicant.objects.filter(job=job, score__lt=min_qualifying_score)
-
-    # if unqualified_applicants.exists():
-    #     for applicant in unqualified_applicants:
-    #         send_regret_email(applicant)
-
-    #     messages.success(request, f"Regret emails sent to {unqualified_applicants.count()} unqualified applicants.")
-
+  
     # Pagination
     paginator = Paginator(all_candidates, 3)
     page_number = request.GET.get('page')
@@ -340,3 +337,29 @@ def job_detail(request, pk):
         'queryset': queryset,
     }
     return render(request, 'core/job_detail.html', context)  
+
+@login_required
+def unqualified_applicants():
+    return render(request, 'core/unqualified_applicants.html')
+
+
+
+
+def send_regret_emails(request, job_id):
+    job = get_object_or_404(JobPosting, id=job_id)
+    
+    # Define the qualification threshold (e.g., 50%)
+    threshold = 50.0
+
+    # Get unqualified applicants
+    unqualified_candidates = Applicant.objects.filter(job=job, score__lt=threshold)
+
+    if unqualified_candidates.exists():
+        for applicant in unqualified_candidates:
+            send_regret_email(applicant)  # Use the utility function
+
+        messages.success(request, f"Regret emails sent to {unqualified_candidates.count()} unqualified candidates.")
+    else:
+        messages.info(request, "No unqualified candidates found.")
+
+    return redirect("upload_resumes", job_id=job.id)

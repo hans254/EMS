@@ -4,6 +4,8 @@ import nltk
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 import re
+from django.core.mail import send_mail
+from django.conf import settings
 
 nltk.download('punkt')
 nltk.download('stopwords')
@@ -51,27 +53,20 @@ def calculate_similarity(job_description, resume_text):
     
     return round(similarity_score * 100, 2)
 
-from django.core.mail import send_mail
-from django.conf import settings
-
 def send_regret_email(applicant):
-    subject = "Application Update - Regret Notification"
-    message = f"""
-    Dear {applicant.name},
+    email = applicant.email.strip()  # Ensure no trailing spaces or dots
 
-    Thank you for applying for the position at {applicant.job.title}. 
-    After careful consideration, we regret to inform you that you were not selected for this role.
+    if not email or "@" not in email:  # Ensure it's a valid email format
+        print(f"Skipping invalid email: {email}")
+        return
 
-    We appreciate your interest in our company and encourage you to apply for future opportunities.
-
-    Best regards,  
-    Hiring Team
-    """
+    subject = "Application Status Update"
+    message = f"Dear {applicant.name},\n\nWe regret to inform you that you have not been selected for the next stage. Thank you for your interest.\n\nBest regards,\nRecruitment Team"
     
     send_mail(
         subject,
         message,
         settings.EMAIL_HOST_USER,
-        [applicant.email],
+        [email],
         fail_silently=False,
     )
