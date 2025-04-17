@@ -152,8 +152,6 @@ def job_posting_create(request):
     return render(request, 'core/job_posting_form.html', context)
 
 
-from django.core.mail import send_mail
-from django.conf import settings
 
 @login_required
 def upload_resumes(request, job_id):
@@ -242,12 +240,12 @@ def upload_resumes(request, job_id):
             return redirect('upload_resumes', job_id=job.id)
 
     # Fetch all applicants
-    all_candidates = Applicant.objects.filter(job=job).order_by('-score')
-    top_candidates = all_candidates[:job.required_candidates]
+    all_applicants = Applicant.objects.filter(job=job).order_by('-score')
+    top_candidates = all_applicants[:job.required_candidates]
+    unqualified_applicants = all_applicants.exclude(id__in=[c.id for c in top_candidates])
 
-  
     # Pagination
-    paginator = Paginator(all_candidates, 3)
+    paginator = Paginator(all_applicants, 3)
     page_number = request.GET.get('page')
     queryset = paginator.get_page(page_number)
 
@@ -256,7 +254,8 @@ def upload_resumes(request, job_id):
         'form': form,  # Ensure updated form is sent to the template
         'queryset': queryset,
         'top_candidates': top_candidates,
-        'all_candidates': all_candidates
+        'all_applicants': all_applicants,
+        'unqualified_applicants': unqualified_applicants,
     }
     return render(request, 'core/upload_resumes.html', context)
 
@@ -320,6 +319,19 @@ def send_invitations(request, job_id):
         'top_candidates': top_candidates,
     }
     return render(request, 'core/send_invitations.html', context)
+
+@login_required
+def send_regret_emails(request, job_id):
+    job = get_object_or_404(JobPosting, id=job_id)
+    all_candidates = Applicant.objects.filter(job=job).order_by('-score')
+    top_candidates = all_candidates[:job.required_candidates]
+    unqualified_candidates = all_candidates.exclude(id__in=[c.id for c in top_candidates])
+    
+    for candidate in unqualified_candidates:
+        send_regret_email(candidate)
+    
+    messages.success(request, f'Regret emails sent to {unqualified_candidates.count()} unqualified candidates.')
+    return redirect('upload_resumes', job_id=job.id)
 
 @login_required
 def delete_items(request, pk):

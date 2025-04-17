@@ -95,7 +95,7 @@
         <div class="col-md-6">
             <div class="card">
                 <div class="card-header bg-primary text-white">
-                    <h3 class="card-title mb-0">All Candidates</h3>
+                    <h3 class="card-title mb-0">Unqualified Candidates</h3>
                 </div>
                 <div class="card-body">
                     <table class="table">
@@ -107,7 +107,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {% for candidate in all_candidates %}
+                            {% for candidate in unqualified_applicants %}
                             <tr {% if candidate in top_candidates %}class="table-success"{% endif %}>
                                 <td>{{ candidate.name }}</td>
                                 <td>{{ candidate.email }}</td>

@@ -158,6 +158,73 @@
                 alert(data.error || 'An error occurred while selecting the folder.');
             }
         }
+
+        
+        // document.addEventListener("DOMContentLoaded", function () {
+        //     const form = document.querySelector("form[action*='send_regret_emails']");
+        //     const submitButton = form.querySelector("button[type='submit']");
+            
+        //     form.addEventListener("submit", function (event) {
+        //         event.preventDefault(); // Prevent default form submission
+                
+        //         // Get all candidate rows
+        //         const allCandidatesRows = document.querySelectorAll(".col-md-6:nth-child(2) tbody tr");
+        //         const qualifiedCandidatesEmails = new Set();
+
+        //         // Get emails of qualified candidates
+        //         document.querySelectorAll(".table-success td:nth-child(2)").forEach(td => {
+        //             qualifiedCandidatesEmails.add(td.textContent.trim());
+        //         });
+
+        //         // Filter out unqualified candidates
+        //         const unqualifiedCandidates = [];
+        //         allCandidatesRows.forEach(row => {
+        //             const email = row.children[1].textContent.trim();
+        //             if (!qualifiedCandidatesEmails.has(email)) {
+        //                 unqualifiedCandidates.push(email);
+        //             } else {
+        //                 row.remove(); // Remove qualified candidates from "All Candidates" table
+        //             }
+        //         });
+
+        //         if (unqualifiedCandidates.length === 0) {
+        //             alert("No unqualified candidates to send regret emails.");
+        //             return;
+        //         }
+
+        //         // Show loading spinner
+        //         submitButton.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Sending...';
+        //         submitButton.disabled = true;
+
+        //         // Send request via Fetch API
+        //         fetch(form.action, {
+        //             method: "POST",
+        //             headers: {
+        //                 "Content-Type": "application/json",
+        //                 "X-CSRFToken": "{{ csrf_token }}",
+        //             },
+        //             body: JSON.stringify({ emails: unqualifiedCandidates }),
+        //         })
+        //         .then(response => response.json())
+        //         .then(data => {
+        //             if (data.success) {
+        //                 alert("Regret emails sent successfully.");
+        //             } else {
+        //                 alert("Error sending emails. Please try again.");
+        //             }
+        //         })
+        //         .catch(error => {
+        //             console.error("Error:", error);
+        //             alert("Failed to send emails. Check console for details.");
+        //         })
+        //         .finally(() => {
+        //             submitButton.innerHTML = "Send Regret Emails";
+        //             submitButton.disabled = false;
+        //         });
+        //     });
+        // });
+
+
     </script>
      <script src="https://unpkg.com/boxicons@2.1.4/dist/boxicons.js"></script>
         

@@ -53,20 +53,47 @@ def calculate_similarity(job_description, resume_text):
     
     return round(similarity_score * 100, 2)
 
-def send_regret_email(applicant):
-    email = applicant.email.strip()  # Ensure no trailing spaces or dots
 
-    if not email or "@" not in email:  # Ensure it's a valid email format
+def send_regret_email(applicant):
+    # Check the correct field name for applicant status
+    application_status = getattr(applicant, "status", None)  # Change "status" if needed
+
+    if not application_status:
+        print(f"Skipping email for {applicant.email} - No status field found")
+        return
+
+    if application_status.lower() != "unqualified":
+        print(f"Skipping email for {applicant.email} - Status: {application_status}")
+        return
+
+    email = applicant.email.strip()  # Remove leading/trailing spaces
+
+    # Remove trailing dot if present
+    if email.endswith('.'):
+        email = email[:-1]
+
+    # Validate email format
+    if not email or "@" not in email or "." not in email.split("@")[-1]:
         print(f"Skipping invalid email: {email}")
         return
 
     subject = "Application Status Update"
-    message = f"Dear {applicant.name},\n\nWe regret to inform you that you have not been selected for the next stage. Thank you for your interest.\n\nBest regards,\nRecruitment Team"
-    
-    send_mail(
-        subject,
-        message,
-        settings.EMAIL_HOST_USER,
-        [email],
-        fail_silently=False,
+    message = (
+        f"Thank you for applying for {applicant.job.title}.\n\n"
+        "After careful consideration, we regret to inform you that you were not selected.\n\n"
+        "We appreciate your interest and encourage you to apply in the future.\n\n"
+        "Best regards,\n"
+        "The Hiring Team"
     )
+
+    try:
+        send_mail(
+            subject,
+            message,
+            settings.EMAIL_HOST_USER,
+            [email],
+            fail_silently=False,
+        )
+        print(f"Regret email sent successfully to {email}")
+    except Exception as e:
+        print(f"Failed to send email to {email}: {e}")
