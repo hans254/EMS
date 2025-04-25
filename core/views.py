@@ -41,12 +41,10 @@ def extract_file_or_folder_id(url):
     if match:
         return match.group(1), 'file'
 
-    # Folder URL format
     match = re.search(r'/drive/folders/([a-zA-Z0-9_-]+)', url)
     if match:
         return match.group(1), 'folder'
 
-    # Shortened URL format
     match = re.search(r'id=([a-zA-Z0-9_-]+)', url)
     if match:
         return match.group(1), 'file'
@@ -251,7 +249,7 @@ def upload_resumes(request, job_id):
 
     context = {
         'job': job,
-        'form': form,  # Ensure updated form is sent to the template
+        'form': form,
         'queryset': queryset,
         'top_candidates': top_candidates,
         'all_applicants': all_applicants,

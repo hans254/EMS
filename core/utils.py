@@ -55,8 +55,7 @@ def calculate_similarity(job_description, resume_text):
 
 
 def send_regret_email(applicant):
-    # Check the correct field name for applicant status
-    application_status = getattr(applicant, "status", None)  # Change "status" if needed
+    application_status = getattr(applicant, "status", None)
 
     if not application_status:
         print(f"Skipping email for {applicant.email} - No status field found")
@@ -66,9 +65,7 @@ def send_regret_email(applicant):
         print(f"Skipping email for {applicant.email} - Status: {application_status}")
         return
 
-    email = applicant.email.strip()  # Remove leading/trailing spaces
-
-    # Remove trailing dot if present
+    email = applicant.email.strip()
     if email.endswith('.'):
         email = email[:-1]
 

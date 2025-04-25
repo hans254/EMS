@@ -9,13 +9,18 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link rel="stylesheet" href="{% static 'css/stylesheet.css' %}">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+
+    <!-- Favicon Configuration -->
+    <link rel="icon" href="{% static 'img/resume_logo.ico' %}" sizes="32x32">
+    <link rel="icon" href="{% static 'img/resume_logo.svg' %}" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="{% static 'img/resume_logo.png' %}">
 </head>
 <body>
 
     <!-- Navbar -->
 <nav class="navbar navbar-expand-lg modal-header mb-10 fixed-top">
     <div class="container-fluid">
-      <a class="navbar-brand fs-3 fw-bold text-white ms-50" href="{% url 'recruitment_list' %}">Resume Analyzer</a>
+      <a class="navbar-brand fs-3 fw-bold text-white ms-3 ms-lg-5" href="{% url 'recruitment_list' %}">Resume Analyzer</a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
@@ -23,6 +28,11 @@
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
           <li class="nav-item">
             <a class="nav-link fs-5 fw-bold text-white" href="{% url 'recruitment_list' %}">Home</a>
+          </li>
+          <li class="nav-item">
+            <button type="button" class="btn btn-link nav-link fs-5 fw-bold text-white" data-bs-toggle="modal" data-bs-target="#driveSetupModal">
+              Google Drive Setup
+            </button>
           </li>
         </ul>
         <ul class="navbar-nav">
@@ -32,8 +42,7 @@
           </li>
           <li class="nav-item">
             <a href="#" class="nav-link bg-primary fw-bold text-white py-2 px-4 rounded" data-bs-toggle="modal" data-bs-target="#logoutModal">Logout</a>
-        </li>
-        
+          </li>
           {% else %}
           <li class="nav-item">
             <a class="nav-link" href="{% url 'login' %}">Login</a>
@@ -46,6 +55,30 @@
       </div>
     </div>
   </nav>
+
+    <!-- Google Drive Setup Modal -->
+    <div id="driveSetupModal" class="modal fade" tabindex="-1" aria-labelledby="driveSetupModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="driveSetupModalLabel">Google Drive Setup</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <b style="margin-bottom: 20px;">Copy the key below to setup your Google Drive folder:</b>
+            <div class="input-group mb-3">
+              <input type="text" class="form-control" id="secretKey" value="drive-downloader@drivedownloader-453710.iam.gserviceaccount.com" readonly>
+              <button class="btn btn-outline-primary" type="button" onclick="copySecretKey()">
+                <i class="fas fa-copy"></i> Copy
+              </button>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <!-- Logout Confirmation Modal -->
     <div id="logoutModal" class="modal fade" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
@@ -66,59 +99,58 @@
       </div>
     </div>
 
-      <!----MODAL------->
-      <a href="#"><div id="version-display" class="bg-primary" data-bs-toggle="modal" data-bs-target="#myModal">ESS Ver: 1.0</div></a>
-      <div id="myModal" class="modal fade" role="dialog">
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h4 class="modal-title">Recruitment System (RS)</h4>
-            </div>
-            <div class="modal-body">
-              <div class="dev-info">
-                <p><b>APPLICANTS SHORTLISTING SYSTEM (ASS)</b></p>
-                <p>Version: 1.0</p>
-                <p>Developed by: <strong>Django Developers</strong></p>
-                <p>Year: 2025</p>
-                <p><b>Phone Number:</b><code> +2547 054 540 27</code></p>
-                <p><b>Email:</b><code> hanselfidel6@gmail.com</code></p>
-                <div class="social-links">
-                  <a href="https://www.linkedin.com/in/hansel-ndemange-360434230/" title="LinkedIn" target="_blank"><i class='bx bxl-linkedin'></i></a>
-                  <a href="https://github.com/hans254/EMS.git" title="Github" target="_blank" ><i class='bx bxl-github'></i></a>
-                </div>
+    <!----MODAL------->
+    <a href="#"><div id="version-display" class="bg-primary" data-bs-toggle="modal" data-bs-target="#myModal">ESS Ver: 1.0</div></a>
+    <div id="myModal" class="modal fade" role="dialog">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title">Recruitment System (RS)</h4>
+          </div>
+          <div class="modal-body">
+            <div class="dev-info">
+              <p><b>APPLICANTS SHORTLISTING SYSTEM (ASS)</b></p>
+              <p>Version: 1.0</p>
+              <p>Developed by: <strong>Django Developers</strong></p>
+              <p>Year: 2025</p>
+              <p><b>Phone Number:</b><code> +2547 054 540 27</code></p>
+              <p><b>Email:</b><code> hanselfidel6@gmail.com</code></p>
+              <div class="social-links">
+                <a href="https://www.linkedin.com/in/hansel-ndemange-360434230/" title="LinkedIn" target="_blank"><i class='bx bxl-linkedin'></i></a>
+                <a href="https://github.com/hans254/EMS.git" title="Github" target="_blank" ><i class='bx bxl-github'></i></a>
               </div>
             </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-default" data-bs-dismiss="modal">Close</button>
-            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-bs-dismiss="modal">Close</button>
           </div>
         </div>
       </div>
-    
-      <div class="container mt-4">
-        {% if messages %}
-        <ul class="messages alert alert-dismissible fade show">
-            {% for message in messages %}
-                <li {% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</li>
-            {% endfor %}
-        </ul>
-        <script>
-            // Automatically remove messages after 2 seconds
-            setTimeout(function () {
-                let messages = document.querySelector(".messages");
-                if (messages) {
-                    messages.style.transition = "opacity 0.5s ease";
-                    messages.style.opacity = "0";
-                    setTimeout(() => messages.remove(), 500); // Remove after fade-out
-                }
-            }, 2000);
-        </script>
-        {% endif %}
-        
-        {% block content %}
-        {% endblock %}
     </div>
     
+    <div class="container mt-4">
+      {% if messages %}
+      <ul class="messages alert alert-dismissible fade show">
+          {% for message in messages %}
+              <li {% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</li>
+          {% endfor %}
+      </ul>
+      <script>
+          // Automatically remove messages after 2 seconds
+          setTimeout(function () {
+              let messages = document.querySelector(".messages");
+              if (messages) {
+                  messages.style.transition = "opacity 0.5s ease";
+                  messages.style.opacity = "0";
+                  setTimeout(() => messages.remove(), 500); // Remove after fade-out
+              }
+          }, 2000);
+      </script>
+      {% endif %}
+      
+      {% block content %}
+      {% endblock %}
+    </div>
     
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
@@ -144,6 +176,29 @@
                 }
             });
         });
+        
+        function copySecretKey() {
+            // Get the secret key input element
+            var copyText = document.getElementById("secretKey");
+            
+            // Select the text field
+            copyText.select();
+            copyText.setSelectionRange(0, 99999); // For mobile devices
+
+            // Copy the text inside the text field
+            navigator.clipboard.writeText(copyText.value);
+            
+            // Change button text temporarily
+            const copyBtn = document.querySelector("#driveSetupModal .btn-outline-primary");
+            const originalHtml = copyBtn.innerHTML;
+            copyBtn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+            
+            // Revert after 2 seconds
+            setTimeout(() => {
+                copyBtn.innerHTML = originalHtml;
+            }, 2000);
+        }
+
         async function selectFolder() {
             // Call the Django view to open the folder selection dialog
             const response = await fetch('/select-folder/');
@@ -158,77 +213,7 @@
                 alert(data.error || 'An error occurred while selecting the folder.');
             }
         }
-
-        
-        // document.addEventListener("DOMContentLoaded", function () {
-        //     const form = document.querySelector("form[action*='send_regret_emails']");
-        //     const submitButton = form.querySelector("button[type='submit']");
-            
-        //     form.addEventListener("submit", function (event) {
-        //         event.preventDefault(); // Prevent default form submission
-                
-        //         // Get all candidate rows
-        //         const allCandidatesRows = document.querySelectorAll(".col-md-6:nth-child(2) tbody tr");
-        //         const qualifiedCandidatesEmails = new Set();
-
-        //         // Get emails of qualified candidates
-        //         document.querySelectorAll(".table-success td:nth-child(2)").forEach(td => {
-        //             qualifiedCandidatesEmails.add(td.textContent.trim());
-        //         });
-
-        //         // Filter out unqualified candidates
-        //         const unqualifiedCandidates = [];
-        //         allCandidatesRows.forEach(row => {
-        //             const email = row.children[1].textContent.trim();
-        //             if (!qualifiedCandidatesEmails.has(email)) {
-        //                 unqualifiedCandidates.push(email);
-        //             } else {
-        //                 row.remove(); // Remove qualified candidates from "All Candidates" table
-        //             }
-        //         });
-
-        //         if (unqualifiedCandidates.length === 0) {
-        //             alert("No unqualified candidates to send regret emails.");
-        //             return;
-        //         }
-
-        //         // Show loading spinner
-        //         submitButton.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Sending...';
-        //         submitButton.disabled = true;
-
-        //         // Send request via Fetch API
-        //         fetch(form.action, {
-        //             method: "POST",
-        //             headers: {
-        //                 "Content-Type": "application/json",
-        //                 "X-CSRFToken": "{{ csrf_token }}",
-        //             },
-        //             body: JSON.stringify({ emails: unqualifiedCandidates }),
-        //         })
-        //         .then(response => response.json())
-        //         .then(data => {
-        //             if (data.success) {
-        //                 alert("Regret emails sent successfully.");
-        //             } else {
-        //                 alert("Error sending emails. Please try again.");
-        //             }
-        //         })
-        //         .catch(error => {
-        //             console.error("Error:", error);
-        //             alert("Failed to send emails. Check console for details.");
-        //         })
-        //         .finally(() => {
-        //             submitButton.innerHTML = "Send Regret Emails";
-        //             submitButton.disabled = false;
-        //         });
-        //     });
-        // });
-
-
     </script>
-     <script src="https://unpkg.com/boxicons@2.1.4/dist/boxicons.js"></script>
-        
-        
-        
+    <script src="https://unpkg.com/boxicons@2.1.4/dist/boxicons.js"></script>
 </body>
-</html> 
+</html>
