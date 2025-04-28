@@ -48,7 +48,7 @@
             <a class="nav-link" href="{% url 'login' %}">Login</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="{% url 'register' %}">Register</a>
+            <a class="nav-link" href="{% url 'signup' %}">Register</a>
           </li>
           {% endif %}
         </ul>
@@ -100,7 +100,7 @@
     </div>
 
     <!----MODAL------->
-    <a href="#"><div id="version-display" class="bg-primary" data-bs-toggle="modal" data-bs-target="#myModal">ESS Ver: 1.0</div></a>
+    <a href="#"><div id="version-display" class="bg-primary" data-bs-toggle="modal" data-bs-target="#myModal">ASS Ver: 1.0</div></a>
     <div id="myModal" class="modal fade" role="dialog">
       <div class="modal-dialog">
         <div class="modal-content">
@@ -213,6 +213,23 @@
                 alert(data.error || 'An error occurred while selecting the folder.');
             }
         }
+
+        // // In your template (upload_resume.html)
+        // async function selectFolder() {
+        //     try {
+        //         // Use the File System Access API (modern browsers)
+        //         const dirHandle = await window.showDirectoryPicker();
+        //         const folderPath = dirHandle.name;
+                
+        //         // Set the selected folder path in the hidden input field
+        //         document.getElementById('id_destination_folder').value = folderPath;
+        //         // Display the selected folder path to the user
+        //         document.getElementById('folder-path').innerText = `Selected Folder: ${folderPath}`;
+        //     } catch (error) {
+        //         console.error('Folder selection error:', error);
+        //         alert('Please select a folder using the button');
+        //     }
+        // }
     </script>
     <script src="https://unpkg.com/boxicons@2.1.4/dist/boxicons.js"></script>
 </body>

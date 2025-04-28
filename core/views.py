@@ -321,14 +321,27 @@ def send_invitations(request, job_id):
 @login_required
 def send_regret_emails(request, job_id):
     job = get_object_or_404(JobPosting, id=job_id)
-    all_candidates = Applicant.objects.filter(job=job).order_by('-score')
-    top_candidates = all_candidates[:job.required_candidates]
-    unqualified_candidates = all_candidates.exclude(id__in=[c.id for c in top_candidates])
-    
-    for candidate in unqualified_candidates:
-        send_regret_email(candidate)
-    
-    messages.success(request, f'Regret emails sent to {unqualified_candidates.count()} unqualified candidates.')
+    if request.method == 'POST':
+        all_candidates = Applicant.objects.filter(job=job).order_by('-score')
+        top_candidates = all_candidates[:job.required_candidates]
+        unqualified_candidates = all_candidates.exclude(id__in=[c.id for c in top_candidates])
+        
+        success_count = 0
+        errors = []
+        
+        for candidate in unqualified_candidates:
+            try:
+                if send_regret_email(candidate):
+                    success_count += 1
+            except Exception as e:
+                errors.append(f"{candidate.email}: {str(e)}")
+        
+        if success_count > 0:
+            messages.success(request, f'Sent regret emails to {success_count} candidates')
+        if errors:
+            messages.error(request, f'Failed to send {len(errors)} emails')
+        
+        return redirect('upload_resumes', job_id=job.id)
     return redirect('upload_resumes', job_id=job.id)
 
 @login_required

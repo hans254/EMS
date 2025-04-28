@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
     'core',
     'crispy_forms',
     'crispy_bootstrap4',
@@ -140,6 +141,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Media settings
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+SITE_ID = 1
+SITE_NAME = "Application Shortlisting System" 
 
 # Email settings (configure according to your email provider)
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
